@@ -315,6 +315,22 @@ public class AccountControllerTest {
         }
 
         try {
+            boolean isOk = accountController.verifyExpirationDate(01, "n0");
+            if(isOk)
+                fail("findRelatedAccount : Shouldn't be ok");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Int and String (avec lettre) -- should be String and String");
+        }
+
+        try {
+            boolean isOk = accountController.verifyExpirationDate("n0", "20");
+            if(isOk)
+                fail("findRelatedAccount : Shouldn't be ok");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : String (with letters) and String -- should be String (without letters) and String");
+        }
+
+        try {
             boolean isOk = accountController.verifyExpirationDate(01, 20);
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
