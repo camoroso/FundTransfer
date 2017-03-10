@@ -1,11 +1,8 @@
 package application;
 
-import java.io.Console;
 import java.sql.SQLException;
 import java.util.Scanner;
-
 import controllers.AccountController;
-import controllers.BDDController;
 import models.Account;
 import models.Consumer;
 

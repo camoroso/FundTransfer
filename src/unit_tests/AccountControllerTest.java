@@ -1,8 +1,6 @@
 package unit_tests;
 
-import static java.util.ServiceLoader.fail;
 import static org.junit.Assert.*;
-
 import controllers.AccountController;
 import models.Account;
 import models.Consumer;

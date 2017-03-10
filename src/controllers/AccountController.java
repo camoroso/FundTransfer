@@ -38,15 +38,6 @@ public class AccountController {
 	 		return account;
 	 	}
 	 	
-	 	public void refundAccount(Account account, int amount) throws SQLException {
-	 		//ON CREDITE LE COMPTE DU MONTANT PASSE EN PARAMETRE
-	 		String query = "UPDATE Account SET remain_balance = remain_balance + " + amount + 
-	 				" WHERE card_number = " + account.getCardNumber();
-	 		result = bddControl.queryUpdate(query);
-	 		System.out.println("Le solde du compte a été crédité de : " + amount + "€.");
-	 		
-	 	}
-	 	
 	 	public void debitAccount(Account account, int amount) throws SQLException {
 	 		//SI LE MONTANT DU COMPTE EST 5 FOIS SUPERIEUR AU MONTANT A PAYER : OK
 	 		//SI OK : DEBIT DANS 7 JOURS
@@ -54,6 +45,8 @@ public class AccountController {
 	 				" WHERE card_number = '" + account.getCardNumber() + "'";
 	 		result = bddControl.queryUpdate(query);
 	 		System.out.println("Le solde du compte a été débité de " + amount + "€.");
+	 		
+	 		this.insertTransaction(account, amount);
 	 	}
 	 	
 	 	public boolean isOnlyNumerics(String cardNumber) {
@@ -128,20 +121,14 @@ public class AccountController {
 	 			
 		 		Consumer consumer = new Consumer();
 		 		
+		 		consumer.setId(i);
 		 		consumer.setFirstname(firstnames[i]);
 		 		consumer.setLastname(lastnames[i]);
 		 		
-		 		System.out.println("--- INSERTION CONSUMER " + i + "/10 ---");
-		 		System.out.println(consumer.getFirstname() + " - " + consumer.getLastname());
+		 		System.out.println(i+1 + "/10");
 		 		
-		 		String query = "INSERT INTO consumer (first_name, last_name) VALUES('"+consumer.getFirstname()+"','"+consumer.getLastname()+"')";
+		 		String query = "INSERT INTO consumer VALUES("+ consumer.getId() + ",'" +consumer.getFirstname()+"','"+consumer.getLastname()+"')";
 		 		bddControl.queryInsert(query);
-		 		query = "SELECT id FROM consumer WHERE first_name = '" + consumer.getFirstname() + "' AND last_name = '" + consumer.getLastname() + "'";
-		 		int id = 0;
-		 		ResultSet results = bddControl.querySelect(query);
-		 		while (results.next()) {
-		 			id = results.getInt(1);
-		 		}
 		 		
 	 			Account account = new Account();
 	 			
@@ -152,11 +139,8 @@ public class AccountController {
 		 		account.setRemainBalance(300);
 		 		account.setRelatedConsumer(consumer);
 		 		
-		 		System.out.println("--- INSERTION ACCOUNT " + i + "/10 ---");
-		 		System.out.println("Card number : " + account.getCardNumber() + " for consumer id " + id);
-		 		
 		 		query = "INSERT INTO account (card_number, expiration_month, expiration_year, cvv, remain_balance, consumer_id) "
-		 				+ "VALUES ('"+account.getCardNumber()+"','"+account.getExpirationMonth()+"','"+account.getExpirationYear()+"','"+account.getCVV()+"','"+account.getRemainBalance()+"',"+id+")";
+		 				+ "VALUES ('"+account.getCardNumber()+"','"+account.getExpirationMonth()+"','"+account.getExpirationYear()+"','"+account.getCVV()+"','"+account.getRemainBalance()+"',"+account.getRelatedConsumer().getId()+")";
 		 		bddControl.queryInsert(query);
 	 		}
 	 	}
@@ -175,6 +159,28 @@ public class AccountController {
 	 		} 
 	 		
 	 		return isOk;
+	 	}
+	 	
+	 	public void insertTransaction(Account account, int amount) throws SQLException {
+	 		Consumer consumer = this.retrieveConsumer(account);
+	 		String query = "INSERT INTO transaction (consumer_id, account_id, balance) VALUES ('"+consumer.getId()+"','"+account.getCardNumber()+"',"+amount+")";
+	 		bddControl.queryInsert(query);
+	 	}
+	 	
+	 	public Consumer retrieveConsumer(Account account) throws SQLException {
+	 		Consumer consumer = new Consumer();
+	 		String query = "SELECT consumer.id, consumer.last_name, consumer.first_name "
+	 				+ "FROM consumer, account "
+	 				+ "WHERE account.consumer_id = consumer.id "
+	 				+ "AND account.card_number = '" + account.getCardNumber() + "'";
+	 		ResultSet results = bddControl.querySelect(query);
+	 		while (results.next()) {
+	 			consumer.setFirstname(results.getString(3));
+		 		consumer.setLastname(results.getString(2));
+		 		consumer.setId(results.getInt(1));
+	 		}
+	 		
+	 		return consumer;
 	 	}
 	 	
 	 }
