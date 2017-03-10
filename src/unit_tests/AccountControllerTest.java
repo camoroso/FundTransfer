@@ -250,37 +250,49 @@ public class AccountControllerTest {
     public void verifyCardTest(){
 
         try {
-            accountController.verifyCard(validCardNumber);
+            boolean isOk = accountController.verifyCard(validCardNumber);
+            if(!isOk)
+                fail("verifyCard : Should be ok");
         } catch (SQLException e) {
             fail("verifyCard : Ne devrait pas apparaitre");
         }
 
         try {
-            accountController.verifyCard(000011110001111);
+            boolean isOk = accountController.verifyCard(000011110001111);
+            if(isOk)
+                fail("verifyCard : Shouldn't be ok");
         } catch (SQLException e) {
             fail("verifyCard : Not valid statement -- Integer");
         }
 
         try {
-            accountController.verifyCard("00001111000");
+            boolean isOk = accountController.verifyCard("00001111000");
+            if(isOk)
+                fail("verifyCard : Shouldn't be ok");
         } catch (SQLException e) {
             fail("verifyCard : Not enough characters");
         }
 
         try {
-            accountController.verifyCard("000011kjjm11000");
+            boolean isOk = accountController.verifyCard("000011kjjm11000");
+            if(isOk)
+                fail("verifyCard : Shouldn't be ok");
         } catch (SQLException e) {
             fail("verifyCard : Not valid characters -- String");
         }
 
         try {
-            accountController.verifyCard(null);
+            boolean isOk = accountController.verifyCard(null);
+            if(isOk)
+                fail("verifyCard : Shouldn't be ok");
         } catch (SQLException e) {
             fail("verifyCard : Not valid statement -- null");
         }
 
         try {
-            accountController.verifyCard();
+            boolean isOk = accountController.verifyCard();
+            if(isOk)
+                fail("verifyCard : Shouldn't be ok");
         } catch (SQLException e) {
             fail("verifyCard : Not valid statement -- empty");
         }
@@ -460,6 +472,60 @@ public class AccountControllerTest {
                 fail("findRelatedAccount : Shouldn't be ok");
         } catch (SQLException e) {
             fail("findRelatedAccount : empty -- should be String");
+        }
+
+
+    }
+
+    @Test
+    public void verifyAccountTest(){
+
+        try {
+            Boolean isOk = accountController.verifyAccount(validAccount);
+            if(!isOk)
+                fail("findRelatedAccount : Ne devrait pas apparaitre");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
+            Boolean isOk = accountController.verifyAccount(unvalidAccount);
+            if(isOk)
+                fail("findRelatedAccount : Ne devrait pas apparaitre");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
+            Boolean isOk = accountController.verifyAccount(null);
+            if(isOk)
+                fail("findRelatedAccount : Ne devrait pas apparaitre");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
+            Boolean isOk = accountController.verifyAccount();
+            if(isOk)
+                fail("findRelatedAccount : Ne devrait pas apparaitre");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
+            Boolean isOk = accountController.verifyAccount("unvalid");
+            if(isOk)
+                fail("findRelatedAccount : Ne devrait pas apparaitre");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
+            Boolean isOk = accountController.verifyAccount(123);
+            if(isOk)
+                fail("findRelatedAccount : Ne devrait pas apparaitre");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
         }
 
 
