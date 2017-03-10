@@ -77,83 +77,83 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void refundAccountTest(){
+    public void insertTransactionTest(){
 
         try {
-            accountController.refundAccount(validAccount, 300);
+            accountController.insertTransaction(validAccount, 300);
         } catch (SQLException e) {
             fail("Not valid statement : NInt");
         }
 
         try {
-            accountController.refundAccount(validAccount, 300.5);
+            accountController.insertTransaction(validAccount, 300.5);
         } catch (SQLException e) {
             fail("Not valid statement : Double");
         }
 
         try {
-            accountController.refundAccount(validAccount, 300.5F);
+            accountController.insertTransaction(validAccount, 300.5F);
         } catch (SQLException e) {
             fail("Not valid statement : Float");
         }
 
         try {
-            accountController.refundAccount(validAccount, "300");
+            accountController.insertTransaction(validAccount, "300");
         } catch (SQLException e) {
             fail("Not valid statement : String");
         }
 
         try {
-            accountController.refundAccount(validAccount);
+            accountController.insertTransaction(validAccount);
         } catch (SQLException e) {
             fail("Not valid statement : amount missing");
         }
 
         try {
-            accountController.refundAccount(validAccount, null);
+            accountController.insertTransaction(validAccount, null);
         } catch (SQLException e) {
             fail("Not valid statement : amount null");
         }
 
 
         try {
-            accountController.refundAccount(unvalidAccount, 300);
+            accountController.insertTransaction(unvalidAccount, 300);
         } catch (SQLException e) {
             fail("Not valid statement : Int and unvalid account");
         }
 
         try {
-            accountController.refundAccount(unvalidAccount, 300.5);
+            accountController.insertTransaction(unvalidAccount, 300.5);
         } catch (SQLException e) {
             fail("Not valid statement : Double and unvalid account");
         }
 
         try {
-            accountController.refundAccount(unvalidAccount, 300.5F);
+            accountController.insertTransaction(unvalidAccount, 300.5F);
         } catch (SQLException e) {
             fail("Not valid statement : Float and unvalid account");
         }
 
         try {
-            accountController.refundAccount(unvalidAccount, "300");
+            accountController.insertTransaction(unvalidAccount, "300");
         } catch (SQLException e) {
             fail("Not valid statement : String and unvalid account");
         }
 
         try {
-            accountController.refundAccount(unvalidAccount);
+            accountController.insertTransaction(unvalidAccount);
         } catch (SQLException e) {
             fail("Not valid statement : amount missing and unvalid account");
         }
 
         try {
-            accountController.refundAccount(unvalidAccount, null);
+            accountController.insertTransaction(unvalidAccount, null);
         } catch (SQLException e) {
             fail("Not valid statement : amount null and unvalid account");
         }
 
         try {
-            accountController.refundAccount(null, null);
+            accountController.insertTransaction(null, null);
         } catch (SQLException e) {
             fail("Not valid statement : amount null and account null");
         }
@@ -161,7 +161,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void refundAccountTest(){
+    public void debitAccountTest(){
 
         try {
             accountController.debitAccount(validAccount, 300);
@@ -436,7 +436,7 @@ public class AccountControllerTest {
             boolean isOk = accountController.isOnlyNumerics("03");
             if(!isOk)
                 fail("findRelatedAccount : Should be ok");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail("findRelatedAccount : Ne devrait pas arrivé");
         }
 
@@ -444,7 +444,7 @@ public class AccountControllerTest {
             boolean isOk = accountController.isOnlyNumerics("0jedfhgizs3");
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail("findRelatedAccount : unvalid String");
         }
 
@@ -452,7 +452,7 @@ public class AccountControllerTest {
             boolean isOk = accountController.isOnlyNumerics(123);
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail("findRelatedAccount : Int -- should be String");
         }
 
@@ -460,7 +460,7 @@ public class AccountControllerTest {
             boolean isOk = accountController.isOnlyNumerics(null);
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail("findRelatedAccount : null -- should be String");
         }
 
@@ -468,7 +468,7 @@ public class AccountControllerTest {
             boolean isOk = accountController.isOnlyNumerics();
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail("findRelatedAccount : empty -- should be String");
         }
 
@@ -528,4 +528,73 @@ public class AccountControllerTest {
 
 
     }
+
+    @Test
+    public void retrieveConsumerTest(){
+
+        try {
+            Consumer consumer = accountController.retrieveConsumer(validAccount);
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
+            Consumer consumer = accountController.retrieveConsumer(unvalidAccount);
+        } catch (SQLException e) {
+            fail("findRelatedAccount : unvalid Consumer object");
+        }
+
+        try {
+            Consumer consumer = accountController.retrieveConsumer(null);
+        } catch (SQLException e) {
+            fail("findRelatedAccount : null Consumer object");
+        }
+
+        try {
+            Consumer consumer = accountController.retrieveConsumer();
+        } catch (SQLException e) {
+            fail("findRelatedAccount : none Consumer object");
+        }
+    }
+
+    @Test
+    public void getRandomNumberTest(){
+
+        try {
+            String id = accountController.getRandomNumber(0);
+        } catch (Exception e) {
+            fail("findRelatedAccount : shouldn't append");
+        }
+
+        try {
+            String id = accountController.getRandomNumber(3);
+        } catch (Exception e) {
+            fail("findRelatedAccount : shouldn't append");
+        }
+
+        try {
+            String id = accountController.getRandomNumber(15);
+        } catch (Exception e) {
+            fail("findRelatedAccount : can append");
+        }
+
+        try {
+            String id = accountController.getRandomNumber("1");
+        } catch (Exception e) {
+            fail("findRelatedAccount : String, should be an INT");
+        }
+
+        try {
+            String id = accountController.getRandomNumber(0.4F);
+        } catch (Exception e) {
+            fail("findRelatedAccount : Float, should be an INT");
+        }
+
+        try {
+            String id = accountController.getRandomNumber(5.4F);
+        } catch (Exception e) {
+            fail("findRelatedAccount : Double, should be an INT");
+        }
+    }
+
 }
