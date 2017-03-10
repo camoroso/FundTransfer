@@ -6,16 +6,16 @@ public class Account {
 	 	private String expirationMonth;
 	 	private String expirationYear;
 	 	private String CVV;
-	 	private float ramainBalance;
+	 	private float remainBalance;
 	 	private Consumer relatedConsumer;
 	 	
-	 	public Account(String cardNumber, String cVV, String expirationMonth, String expirationYear, float ramainBalance,
+	 	public Account(String cardNumber, String cVV, String expirationMonth, String expirationYear, float remainBalance,
 	 			Consumer relatedConsumer) {
 	 		this.cardNumber = cardNumber;
 	 		this.CVV = cVV;
 	 		this.expirationMonth = expirationMonth;
 	 		this.expirationYear = expirationYear;
-	 		this.ramainBalance = ramainBalance;
+	 		this.remainBalance = remainBalance;
 	 		this.relatedConsumer = relatedConsumer;
 	 	}
 	 	
@@ -54,12 +54,12 @@ public class Account {
 	 		this.expirationYear = expirationYear;
 	 	}
 	 	
-	 	public float getRamainBalance() {
-	 		return ramainBalance;
+	 	public float getRemainBalance() {
+	 		return remainBalance;
 	 	}
 	 	
-	 	public void setRamainBalance(float ramainBalance) {
-	 		this.ramainBalance = ramainBalance;
+	 	public void setRemainBalance(float remainBalance) {
+	 		this.remainBalance = remainBalance;
 	 	}
 	 	
 	 	public Consumer getRelatedConsumer() {

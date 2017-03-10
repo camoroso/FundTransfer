@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import controllers.AccountController;
+import controllers.BDDController;
 import models.Account;
 import models.Consumer;
 
@@ -24,32 +25,49 @@ public class FundTransfer {
 	 		
 	 		Scanner sc = new Scanner(System.in);
 	 		
-	 		System.out.println("Montant du virement :");
+	 		System.out.println("--- INJECTION EN BASE DE DONNEES ---");
+	 		accountCtrl.insertData();
+	 		
+	 		System.out.println("--- TRANSACTION ---");
+	 		System.out.println("Montant du paiement :");
 	 		amount = sc.nextInt();
 	 		
 	 		System.out.println("Veuillez entrer les informations de votre carte bancaire.");
 	 		
-	 		System.out.print("Numéro de la carte :");
-	 		account.setCardNumber(sc.nextLine());
+	 		System.out.print("Numero de la carte :");
+	 		account.setCardNumber(sc.next());
 	 		
 	 		isOk = accountCtrl.verifyCard(account.getCardNumber()); 
 	 		if (!isOk) {
+	 			System.out.println("Numero de carte incorrect.");
 	 			System.exit(1);
 	 		}
 	 		
 	 		System.out.print("Mois d'expiration (format MM) :");
-	 		account.setExpirationMonth(sc.nextLine());
+	 		account.setExpirationMonth(sc.next());
 	 		
-	 		System.out.print("Année d'expiration (format AA) :");
-	 		account.setExpirationYear(sc.nextLine());
+	 		System.out.print("Annee d'expiration (format AA) :");
+	 		account.setExpirationYear(sc.next());
 	 		
 	 		if (!accountCtrl.verifyExpirationDate(account.getExpirationMonth(), account.getExpirationYear())) {
+	 			System.out.println("Date d'expiration incorrecte.");
 	 			System.exit(1);
 	 		}
 	 		
 	 		System.out.print("CVV :");
-	 		account.setCVV(sc.nextLine());
-	 
+	 		account.setCVV(sc.next());
+	 		
+	 		if (!accountCtrl.verifyAccount(account)) {
+	 			System.out.println("Les informations entrees ne correspondent pas.");
+	 			System.exit(1);
+	 		} else {
+	 			System.out.println("Les informations entrees sont correctes.");
+	 		}
+	 		
+	 		System.out.println("--- TRANSFERT EN COURS ---");
+	 		accountCtrl.debitAccount(account, amount);
+	 		
+	 		System.out.println("--- TRANSFERT TERMINE ---");
 	 	}
 	 
 	 }

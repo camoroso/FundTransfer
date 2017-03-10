@@ -19,7 +19,7 @@ public class BDDController {
 	 		
 	 		Class.forName("com.mysql.jdbc.Driver");
 	 		
-	 		String url = "jdbc:mysql://10.31.0.109:3306/fund_transfer";
+	 		String url = "jdbc:mysql://localhost:3306/fund_transfer";
 	 		String user = "root";
 	 		String pwd = "";
 	 		cnx = null;
