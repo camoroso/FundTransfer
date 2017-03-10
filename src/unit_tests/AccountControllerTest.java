@@ -20,7 +20,7 @@ public class AccountControllerTest {
             validCardNumber,
             "123",
             "01",
-            "9999",
+            "99",
             2.3F,
             consumer
     );
@@ -154,6 +154,12 @@ public class AccountControllerTest {
             fail("Not valid statement : amount null and unvalid account");
         }
 
+        try {
+            accountController.refundAccount(null, null);
+        } catch (SQLException e) {
+            fail("Not valid statement : amount null and account null");
+        }
+
     }
 
     @Test
@@ -232,6 +238,12 @@ public class AccountControllerTest {
             fail("debitAccount : Not valid statement -- amount null and unvalid account");
         }
 
+        try {
+            accountController.debitAccount(null, null);
+        } catch (SQLException e) {
+            fail("debitAccount : Not valid statement -- amount null and account null");
+        }
+
     }
 
     @Test
@@ -287,6 +299,14 @@ public class AccountControllerTest {
         }
 
         try {
+            boolean isOk = accountController.verifyExpirationDate("01", "20");
+            if(!isOk)
+                fail("findRelatedAccount : Should be ok");
+        } catch (SQLException e) {
+            fail("findRelatedAccount : Ne devrait pas apparaitre");
+        }
+
+        try {
             boolean isOk = accountController.verifyExpirationDate(01, "2020");
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
@@ -295,7 +315,7 @@ public class AccountControllerTest {
         }
 
         try {
-            boolean isOk = accountController.verifyExpirationDate(01, 2020);
+            boolean isOk = accountController.verifyExpirationDate(01, 20);
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
         } catch (SQLException e) {
@@ -303,7 +323,7 @@ public class AccountControllerTest {
         }
 
         try {
-            boolean isOk = accountController.verifyExpirationDate("01", 2020);
+            boolean isOk = accountController.verifyExpirationDate("01", 200);
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
         } catch (SQLException e) {
@@ -311,7 +331,7 @@ public class AccountControllerTest {
         }
 
         try {
-            boolean isOk = accountController.verifyExpirationDate(null, "2020");
+            boolean isOk = accountController.verifyExpirationDate(null, "20");
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
         } catch (SQLException e) {
@@ -319,19 +339,11 @@ public class AccountControllerTest {
         }
 
         try {
-            boolean isOk = accountController.verifyExpirationDate(null, 2020);
+            boolean isOk = accountController.verifyExpirationDate(null, 20);
             if(isOk)
                 fail("findRelatedAccount : Shouldn't be ok");
         } catch (SQLException e) {
             fail("findRelatedAccount : null and Int -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(, 2020);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : empty and Int -- should be String and String");
         }
 
         try {
@@ -348,38 +360,6 @@ public class AccountControllerTest {
                 fail("findRelatedAccount : Shouldn't be ok");
         } catch (SQLException e) {
             fail("findRelatedAccount : Int and null -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(, null);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : empty and null -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("01", );
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : String and empty -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(01, );
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Int and empty -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(, );
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : empty and empty -- should be String and String");
         }
 
         try {
