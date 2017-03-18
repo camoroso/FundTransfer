@@ -1,8 +1,11 @@
 package controllers;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -66,15 +69,17 @@ public class BDDController {
 	 		return statut;
 	 	}
 	 	
-	 	public void insertData() throws SQLException, FileNotFoundException {
-	 	    BufferedReader br = new BufferedReader(new FileReader("data.txt"));
+	 	public void insertData() throws SQLException, URISyntaxException, FileNotFoundException {
+	 		dropDB();
+	 		BufferedReader br = new BufferedReader(new FileReader("./data.txt"));
+	 	    
 	 	    PreparedStatement pstmt = null;
 	 	    Connection conn = null;
 	 	    int id;
 	 	    String lastname, firstname, cardNumber, expirationMonth, expirationYear, cvv, query;
 	 	    try {
 	 	      conn = this.connectToBDD();
-
+	 	      
 	 	      String line = null;
 	 	      while((line=br.readLine()) != null) {
 	 	    	  String tmp[]=line.split(",");
@@ -87,15 +92,14 @@ public class BDDController {
 			 	  cvv=tmp[6];
 			 	  
 			 	 query = "INSERT INTO consumer VALUES("+ id + ",'" +firstname+"','"+lastname+"')";
-			 	 this.queryInsert(query);
 			 	 
-			 	 conn.prepareStatement(query);
+			 	 pstmt = conn.prepareStatement(query);
 			 	 pstmt.executeUpdate();
 			 	 
 			 	 query = "INSERT INTO account (card_number, expiration_month, expiration_year, cvv, remain_balance, consumer_id) "
 		 				+ "VALUES ('"+cardNumber+"','"+expirationMonth+"','"+expirationYear+"','"+cvv+"',300,"+id+")";
 			 	
-			 	 conn.prepareStatement(query);
+			 	 pstmt = conn.prepareStatement(query);
 			 	 pstmt.executeUpdate();
 	 	      }
 	 	      
@@ -103,9 +107,16 @@ public class BDDController {
 	 	    } catch (Exception e) {
 	 	      System.err.println("Error: " + e.getMessage());
 	 	      e.printStackTrace();
-	 	    } finally {
-	 	      pstmt.close();
-	 	      conn.close();
 	 	    }
 	 	  }
+	 	
+	 	public void dropDB() throws SQLException {
+	 		Statement stmt = cnx.createStatement();
+	 		String query = "DELETE FROM account";
+	 		stmt.executeUpdate(query);
+	 		query = "DELETE FROM consumer";
+	 		stmt.executeUpdate(query);
+	 		query = "DELETE FROM transaction";
+	 		stmt.executeUpdate(query);
+	 	}
 	}

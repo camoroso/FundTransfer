@@ -24,14 +24,14 @@ public class AccountController {
 		}
 	 	
 		public Account findRelatedAccount(String numberCard) throws SQLException {
-	 		String query = "SELECT * FROM Account WHERE card_number = '" + numberCard + "'";
+	 		String query = "SELECT * FROM account WHERE card_number = '" + numberCard + "'";
 	 		try {
 	 			results = bddControl.querySelect(query);
 	 		} catch (Exception e){
 	 			return null;
 	 		}
 	 		
-	 		if (results.last() && results.getRow() <= 1) {
+	 		if (!results.isBeforeFirst()) {
 	 			return null;
 	 		}
 	 		
@@ -77,10 +77,10 @@ public class AccountController {
 	 	
 	 	public boolean isOnlyNumerics(String cardNumber) {
 	 		boolean isOk = false;
-	 		String regex = "[a-zA-Z]";
-	 		if (!cardNumber.matches(regex)) {
+	 		String regex = "[0-9]+";
+	 		if (cardNumber != null && cardNumber.matches(regex)) {
 	 			isOk = true;
-	 		} else if (cardNumber.length()!=15) {
+	 		} else if (cardNumber != null && cardNumber.length()!=15) {
 	 			isOk = false;
 	 		}
 	 		return isOk;
@@ -88,9 +88,19 @@ public class AccountController {
 	 	
 	 	public boolean verifyExpirationDate(String expirationMonth, String expirationYear) {
 	 		boolean isOk = false;
+	 		int month = 0, year = 0;
 	 		
-	 		int month = Integer.parseInt(expirationMonth);
-	 		int year = Integer.parseInt(expirationYear);
+	 		if (expirationYear != null && expirationYear.length() > 2) {
+	 			expirationYear = expirationYear.substring(expirationYear.length()-2, expirationYear.length());
+	 		}
+	 		
+	 		try {
+	 			month = Integer.parseInt(expirationMonth);
+		 		year = Integer.parseInt(expirationYear);
+	 		} catch (NumberFormatException e) {
+	 			e.getMessage();
+	 			return false;
+	 		}
 	 		
 	 		DateFormat dateFormat = new SimpleDateFormat("yy/MM");
 	 		Date date = new Date();
@@ -111,6 +121,8 @@ public class AccountController {
 	 			} else {
 	 				isOk = true;
 	 			}
+	 		} else {
+	 			isOk = false;
 	 		}
 	 		
 	 		return isOk;
@@ -138,23 +150,32 @@ public class AccountController {
 	 	public boolean verifyAccount(Account account) throws SQLException {
 	 		boolean isOk = false;
 	 		
-	 		String query = "SELECT * FROM account WHERE card_number = '" + account.getCardNumber() + "'"
-	 				+ " AND expiration_month = '" + Integer.parseInt(account.getExpirationMonth()) + "'"
-	 						+ " AND expiration_year = '" + account.getExpirationYear().trim() + "'"
-	 								+ " AND cvv = '" + account.getCVV() + "'";
-	 		results = bddControl.querySelect(query);
-	 		
-	 		if (results.next()) {
-	 			isOk = true;
-	 		} 
+	 		if (account != null && account.getCardNumber() != null) {
+		 		if (account.getExpirationMonth().length()==1) {
+		 			account.setExpirationMonth("0"+account.getExpirationMonth());
+		 		}
+		 		
+		 		String query = "SELECT * FROM account WHERE card_number = '" + account.getCardNumber() + "'"
+		 				+ " AND expiration_month = '" + account.getExpirationMonth() + "'"
+		 						+ " AND expiration_year = '" + account.getExpirationYear().trim() + "'"
+		 								+ " AND cvv = '" + account.getCVV() + "'";
+		 		results = bddControl.querySelect(query);
+		 		
+		 		if (results.next()) {
+		 			isOk = true;
+		 		} 
+	 		}
 	 		
 	 		return isOk;
 	 	}
 	 	
 	 	public int insertTransaction(Account account, int amount) throws SQLException {
-	 		int result; Consumer consumer = this.retrieveConsumer(account);
-	 		String query = "INSERT INTO transaction (consumer_id, account_id, balance) VALUES ('"+consumer.getId()+"','"+account.getCardNumber()+"',"+amount+")";
-	 		result = bddControl.queryInsert(query);
+	 		int result = 0; 
+	 		Consumer consumer = this.retrieveConsumer(account);
+	 		if (consumer.getFirstname() != null && consumer.getLastname() != null) {
+	 			String query = "INSERT INTO transaction (consumer_id, account_id, balance) VALUES ('"+consumer.getId()+"','"+account.getCardNumber()+"',"+amount+")";
+		 		result = bddControl.queryInsert(query);
+	 		}
 	 		return result;
 	 	}
 	 	
@@ -163,7 +184,10 @@ public class AccountController {
 	 		String query = "SELECT consumer.id, consumer.last_name, consumer.first_name "
 	 				+ "FROM consumer, account "
 	 				+ "WHERE account.consumer_id = consumer.id "
-	 				+ "AND account.card_number = '" + account.getCardNumber() + "'";
+	 				+ "AND account.card_number = '" + account.getCardNumber() + "' "
+	 						+ "AND account.expiration_month = '" + account.getExpirationMonth() + "' "
+	 								+ "AND account.expiration_year = '" + account.getExpirationYear() + "' "
+	 										+ " AND account.cvv = '" + account.getCVV() + "' "; 
 	 		ResultSet results = bddControl.querySelect(query);
 	 		while (results.next()) {
 	 			consumer.setFirstname(results.getString(3));

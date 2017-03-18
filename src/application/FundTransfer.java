@@ -2,6 +2,7 @@ package application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -18,7 +19,7 @@ public class FundTransfer {
 	 	private static AccountController accountCtrl;
 	 	private static BDDController bddCtrl;
 	 	
-	 	public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException {
+	 	public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException, URISyntaxException {
 	 
 	 		consumer = new Consumer();
 	 		account = new Account();
@@ -31,7 +32,7 @@ public class FundTransfer {
 	 		System.out.println("--- INJECTION EN BASE DE DONNEES ---");
 	 		bddCtrl.insertData();
 	 		
-	 	/*	System.out.println("--- TRANSACTION ---");
+	 		System.out.println("--- TRANSACTION ---");
 	 		System.out.println("Montant du paiement :");
 	 		amount = sc.nextInt();
 	 		
@@ -70,7 +71,7 @@ public class FundTransfer {
 	 		System.out.println("--- TRANSFERT EN COURS ---");
 	 		accountCtrl.debitAccount(account, amount);
 	 		
-	 		System.out.println("--- TRANSFERT TERMINE ---");*/
+	 		System.out.println("--- TRANSFERT TERMINE ---");
 	 	}
 	 
 	 }
