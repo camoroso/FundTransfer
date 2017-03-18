@@ -22,6 +22,7 @@ public class BDDController {
 		Statement statement;
 	 	Connection cnx;
 	 	
+	 	//Connexion a la base de donnees en local root pas de mdp
 	 	public Connection connectToBDD() throws ClassNotFoundException {
 	 		
 	 		Class.forName("com.mysql.jdbc.Driver");
@@ -40,6 +41,7 @@ public class BDDController {
 	 		return cnx;
 	 	}
 	 	
+	 	//Selection d'un object en base
 	 	public ResultSet querySelect(String query) throws SQLException {
 	 		// Création de l'objet gérant les requêtes
 	 		statement = cnx.createStatement();
@@ -50,7 +52,8 @@ public class BDDController {
 	 		return result;
 	 	}
 	 	
-	 	public int queryInsert(String query) throws SQLException {
+	 	//Modification ou insertion en base
+	 	public int queryUpdate(String query) throws SQLException {
 	 		// Création de l'objet gérant les requêtes
 	 		statement = cnx.createStatement();
 	 				
@@ -60,17 +63,12 @@ public class BDDController {
 	 		return statut;
 	 	}
 	 	
-	 	public int queryUpdate(String query) throws SQLException {
-	 		// Création de l'objet gérant les requêtes
-	 		statement = cnx.createStatement();
-	 		
-	 		// Exécution d'une requête d'écriture
-	 		int statut = statement.executeUpdate(query);
-	 		return statut;
-	 	}
-	 	
+	 	//Insertion des donnes de test
 	 	public void insertData() throws SQLException, URISyntaxException, FileNotFoundException {
+	 		//On vide la base en premier
 	 		dropDB();
+	 		
+	 		//Fichier contenant les jeux de test
 	 		BufferedReader br = new BufferedReader(new FileReader("./data.txt"));
 	 	    
 	 	    PreparedStatement pstmt = null;
@@ -81,7 +79,10 @@ public class BDDController {
 	 	      conn = this.connectToBDD();
 	 	      
 	 	      String line = null;
+	 	      
+	 	      //On lit le fichier data.txt pour inserer en base
 	 	      while((line=br.readLine()) != null) {
+	 	    	  System.out.println(line);
 	 	    	  String tmp[]=line.split(",");
 	 	    	  id=Integer.parseInt(tmp[0]);
 			 	  lastname=tmp[1];
@@ -91,16 +92,19 @@ public class BDDController {
 			 	  expirationYear=tmp[5];
 			 	  cvv=tmp[6];
 			 	  
-			 	 query = "INSERT INTO consumer VALUES("+ id + ",'" +firstname+"','"+lastname+"')";
+			 	  //Insertion des clients
+			 	  query = "INSERT INTO consumer VALUES("+ id + ",'" +firstname+"','"+lastname+"')";
 			 	 
-			 	 pstmt = conn.prepareStatement(query);
-			 	 pstmt.executeUpdate();
+			 	  pstmt = conn.prepareStatement(query);
+			 	  pstmt.executeUpdate();
 			 	 
-			 	 query = "INSERT INTO account (card_number, expiration_month, expiration_year, cvv, remain_balance, consumer_id) "
+			 	  
+			 	  //Insertion des comptes
+			 	  query = "INSERT INTO account (card_number, expiration_month, expiration_year, cvv, remain_balance, consumer_id) "
 		 				+ "VALUES ('"+cardNumber+"','"+expirationMonth+"','"+expirationYear+"','"+cvv+"',300,"+id+")";
 			 	
-			 	 pstmt = conn.prepareStatement(query);
-			 	 pstmt.executeUpdate();
+			 	  pstmt = conn.prepareStatement(query);
+			 	  pstmt.executeUpdate();
 	 	      }
 	 	      
 	 	      
@@ -110,13 +114,13 @@ public class BDDController {
 	 	    }
 	 	  }
 	 	
+	 	//On vide les 3 tables de la base
 	 	public void dropDB() throws SQLException {
 	 		Statement stmt = cnx.createStatement();
-	 		String query = "DELETE FROM account";
-	 		stmt.executeUpdate(query);
-	 		query = "DELETE FROM consumer";
-	 		stmt.executeUpdate(query);
-	 		query = "DELETE FROM transaction";
-	 		stmt.executeUpdate(query);
+	 		String[] tables = {"account", "consumer", "transaction"};
+	 		for (int i=0; i<3;i++) {
+	 			String query = "DELETE FROM " + tables[i];
+	 			stmt.executeUpdate(query);
+	 		}
 	 	}
 	}

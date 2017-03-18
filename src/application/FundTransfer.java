@@ -25,7 +25,6 @@ public class FundTransfer {
 	 		account = new Account();
 	 		accountCtrl = new AccountController();
 	 		bddCtrl = new BDDController();
-	 		boolean isOk;
 	 		
 	 		Scanner sc = new Scanner(System.in);
 	 		
@@ -41,9 +40,7 @@ public class FundTransfer {
 	 		System.out.print("Numero de la carte :");
 	 		account.setCardNumber(sc.next());
 	 		
-	 		isOk = accountCtrl.verifyCard(account.getCardNumber()); 
-	 		if (!isOk) {
-	 			System.out.println("Numero de carte incorrect.");
+	 		if (!accountCtrl.isOnlyNumerics(account.getCardNumber())) {
 	 			System.exit(1);
 	 		}
 	 		
@@ -60,6 +57,10 @@ public class FundTransfer {
 	 		
 	 		System.out.print("CVV :");
 	 		account.setCVV(sc.next());
+	 		
+	 		if (!accountCtrl.verifyCvv(account.getCVV())) {
+	 			System.exit(1);
+	 		}
 	 		
 	 		if (!accountCtrl.verifyAccount(account)) {
 	 			System.out.println("Les informations entrees ne correspondent pas.");

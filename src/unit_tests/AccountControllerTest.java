@@ -36,23 +36,11 @@ public class AccountControllerTest extends TestCase {
     public void prepareData() {
         consumer = new Consumer(9, "TINTIN", "Danielle");
         account = new Account("656647384765","721","05","19",2.3F,consumer);
-        accountFailed = new Account("098758493846","114","17","13",2.3F,consumer);
+        accountFailed = new Account("098773693846","114","17","13",2.3F,consumer);
         accountEmpty = new Account();
     }
 
     
-    @Test
-    public void testFindRelatedAccount() throws SQLException {
-    	
-    	String i = null;
-    	
-    	assertNotNull(accountCtrl.findRelatedAccount("324152410098"));
-    	assertNull(accountCtrl.findRelatedAccount("0078986471111000"));
-    	assertNull(accountCtrl.findRelatedAccount("000011kjjm11000"));
-    	assertNull(accountCtrl.findRelatedAccount(null));
-    	assertNull(accountCtrl.findRelatedAccount(i));
-
-    }
 
     @Test
     public void testInsertTransaction() throws SQLException{
@@ -127,16 +115,6 @@ public class AccountControllerTest extends TestCase {
     	assertNull(accountCtrl.retrieveConsumer(accountFailed));
     	assertNull(accountCtrl.retrieveConsumer(null));
 
-    }
-
-    @Test
-    public void testGetRandomNumber(){
-
-    	int i;
-    	
-    	assertEquals("", AccountController.getRandomNumber(0));
-    	assertEquals("", AccountController.getRandomNumber(15));
-    	//fail(AccountController.getRandomNumber(i));
     }
 
 }
