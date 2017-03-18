@@ -24,29 +24,55 @@ public class AccountController {
 		}
 	 	
 		public Account findRelatedAccount(String numberCard) throws SQLException {
-	 		String query = "SELECT * FROM Account WHERE cardNumber = " + numberCard;
-	 		results = bddControl.querySelect(query);
+	 		String query = "SELECT * FROM Account WHERE card_number = '" + numberCard + "'";
+	 		try {
+	 			results = bddControl.querySelect(query);
+	 		} catch (Exception e){
+	 			return null;
+	 		}
 	 		
-	 		while (results.next()) {
-	 			account.setCardNumber(numberCard);
+	 		if (results.last() && results.getRow() <= 1) {
+	 			return null;
+	 		}
+	 		
+ 			while (results.next()) {
+ 				account = new Account();
+ 				account.setCardNumber(numberCard);
 	 			account.setCVV(results.getString(4));
 	 			account.setExpirationMonth(results.getString(2));
 	 			account.setExpirationYear(results.getString(3));
 	 			account.setRemainBalance(results.getFloat(5));
-	 		}
+ 			}
 	 		
 	 		return account;
 	 	}
 	 	
-	 	public void debitAccount(Account account, int amount) throws SQLException {
-	 		//SI LE MONTANT DU COMPTE EST 5 FOIS SUPERIEUR AU MONTANT A PAYER : OK
-	 		//SI OK : DEBIT DANS 7 JOURS
-	 		String query = "UPDATE account SET remain_balance = remain_balance - " + amount + 
-	 				" WHERE card_number = '" + account.getCardNumber() + "'";
-	 		result = bddControl.queryUpdate(query);
-	 		System.out.println("Le solde du compte a été débité de " + amount + "€.");
-	 		
-	 		this.insertTransaction(account, amount);
+	 	public int debitAccount(Account account, int amount) throws SQLException {
+	 		int result = 0;
+	 		if (this.isTheAmountOk(account, amount)) {
+	 			String query = "UPDATE account SET remain_balance = remain_balance - " + amount + 
+		 				" WHERE card_number = '" + account.getCardNumber() + "'";
+		 		result = bddControl.queryUpdate(query);
+		 		System.out.println("Le solde du compte a été débité de " + amount + "€.");
+		 		
+		 		result = this.insertTransaction(account, amount);
+	 		}
+	 		return result;
+	 	}
+	 	
+	 	public boolean isTheAmountOk(Account account, int amount) throws SQLException {
+	 		boolean isOk = false;
+	 		String query = "SELECT remain_balance FROM account WHERE card_number = '" + account.getCardNumber() + "'";
+	 		ResultSet results = bddControl.querySelect(query);
+	 		float balance = 0;
+	 		while (results.next()) {
+	 			balance = results.getFloat(1);
+	 		}
+	 		if (balance >= (amount * 5)) {
+	 			isOk = true;
+	 		}
+
+	 		return isOk;
 	 	}
 	 	
 	 	public boolean isOnlyNumerics(String cardNumber) {
@@ -161,10 +187,11 @@ public class AccountController {
 	 		return isOk;
 	 	}
 	 	
-	 	public void insertTransaction(Account account, int amount) throws SQLException {
-	 		Consumer consumer = this.retrieveConsumer(account);
+	 	public int insertTransaction(Account account, int amount) throws SQLException {
+	 		int result; Consumer consumer = this.retrieveConsumer(account);
 	 		String query = "INSERT INTO transaction (consumer_id, account_id, balance) VALUES ('"+consumer.getId()+"','"+account.getCardNumber()+"',"+amount+")";
-	 		bddControl.queryInsert(query);
+	 		result = bddControl.queryInsert(query);
+	 		return result;
 	 	}
 	 	
 	 	public Consumer retrieveConsumer(Account account) throws SQLException {

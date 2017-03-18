@@ -1,600 +1,153 @@
 package unit_tests;
 
-import static org.junit.Assert.*;
 import controllers.AccountController;
+import junit.framework.TestCase;
 import models.Account;
 import models.Consumer;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
-public class AccountControllerTest {
+public class AccountControllerTest extends TestCase {
 
     private AccountController accountController;
+    private String cardNumber;
+    private Consumer consumer;
+    private Account account, accountFailed, accountEmpty;
+    
+    @Override
+    public void setUp() throws ClassNotFoundException {
+    	accountController = new AccountController();
+    	prepareData();
+    }
+    
+    @Override
+    public void tearDown() {
+    	accountController = null;
+    	assertNull(accountController);
+    }
+    
+    public void prepareData() {
+    	cardNumber = "000011110001111";
+        consumer = new Consumer(0, "consumer", "test");
+        account = new Account(cardNumber,"123","01","99",2.3F,consumer);
+        accountFailed = new Account("000011110000","13","00","2013",2.3F,consumer);
+        accountEmpty = new Account();
+    }
 
-    private String validCardNumber = "000011110001111";
-    private Consumer consumer = new Consumer(0, "consumer", "test");
-    private Account validAccount = new Account(
-            validCardNumber,
-            "123",
-            "01",
-            "99",
-            2.3F,
-            consumer
-    );
-
-    private Account unvalidAccount = new Account(
-            "000011110000",
-            "13",
-            "00",
-            "2013",
-            2.3F,
-            consumer
-    );
-
-
-
-
+    
     @Test
-    public void findRelatedAccountTest() {
-
-        try {
-            accountController.findRelatedAccount(validCardNumber);
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            accountController.findRelatedAccount(000011110001111);
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Not valid statement -- Integer");
-        }
-
-        try {
-            accountController.findRelatedAccount("00001111000");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Not enough characters");
-        }
-
-        try {
-            accountController.findRelatedAccount("000011kjjm11000");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Not valid characters");
-        }
-
-        try {
-            accountController.findRelatedAccount(null);
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Not valid statement -- null");
-        }
-
-        try {
-            accountController.findRelatedAccount();
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Not valid statement -- empty");
-        }
+    public void testFindRelatedAccount() throws SQLException {
+    	
+    	String i = null;
+    	
+    	assertNull(accountController.findRelatedAccount("0078986471111000"));
+    	assertNull(accountController.findRelatedAccount("000011kjjm11000"));
+    	assertNull(accountController.findRelatedAccount(null));
+    	assertNull(accountController.findRelatedAccount(i));
 
     }
 
     @Test
-    public void insertTransactionTest(){
+    public void testInsertTransaction() throws SQLException{
 
-        try {
-            accountController.insertTransaction(validAccount, 300);
-        } catch (SQLException e) {
-            fail("Not valid statement : NInt");
-        }
-
-        try {
-            accountController.insertTransaction(validAccount, 300.5);
-        } catch (SQLException e) {
-            fail("Not valid statement : Double");
-        }
-
-        try {
-            accountController.insertTransaction(validAccount, 300.5F);
-        } catch (SQLException e) {
-            fail("Not valid statement : Float");
-        }
-
-        try {
-            accountController.insertTransaction(validAccount, "300");
-        } catch (SQLException e) {
-            fail("Not valid statement : String");
-        }
-
-        try {
-            accountController.insertTransaction(validAccount);
-        } catch (SQLException e) {
-            fail("Not valid statement : amount missing");
-        }
-
-        try {
-            accountController.insertTransaction(validAccount, null);
-        } catch (SQLException e) {
-            fail("Not valid statement : amount null");
-        }
-
-
-        try {
-            accountController.insertTransaction(unvalidAccount, 300);
-        } catch (SQLException e) {
-            fail("Not valid statement : Int and unvalid account");
-        }
-
-        try {
-            accountController.insertTransaction(unvalidAccount, 300.5);
-        } catch (SQLException e) {
-            fail("Not valid statement : Double and unvalid account");
-        }
-
-        try {
-            accountController.insertTransaction(unvalidAccount, 300.5F);
-        } catch (SQLException e) {
-            fail("Not valid statement : Float and unvalid account");
-        }
-
-        try {
-            accountController.insertTransaction(unvalidAccount, "300");
-        } catch (SQLException e) {
-            fail("Not valid statement : String and unvalid account");
-        }
-
-        try {
-            accountController.insertTransaction(unvalidAccount);
-        } catch (SQLException e) {
-            fail("Not valid statement : amount missing and unvalid account");
-        }
-
-        try {
-            accountController.insertTransaction(unvalidAccount, null);
-        } catch (SQLException e) {
-            fail("Not valid statement : amount null and unvalid account");
-        }
-
-        try {
-            accountController.insertTransaction(null, null);
-        } catch (SQLException e) {
-            fail("Not valid statement : amount null and account null");
-        }
+    	String s = "1t2o3to";
+    	
+        assertEquals(1, accountController.insertTransaction(account, 300));
+        //assertEquals(0, accountController.insertTransaction(account, i));
+        //assertEquals(0, accountController.insertTransaction(account, Integer.parseInt(s)));
+        assertEquals(0, accountController.insertTransaction(accountFailed, 300));
+        //assertEquals(0, accountController.insertTransaction(accountFailed, i));
+        //assertEquals(0, accountController.insertTransaction(accountFailed, Integer.parseInt(s)));
+        assertEquals(0, accountController.insertTransaction(accountEmpty, 300));
 
     }
 
     @Test
-    public void debitAccountTest(){
+    public void testDebitAccount() throws SQLException{
 
-        try {
-            accountController.debitAccount(validAccount, 300);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- Int");
-        }
-
-        try {
-            accountController.debitAccount(validAccount, 300.5);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- Double");
-        }
-
-        try {
-            accountController.debitAccount(validAccount, 300.5F);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- Float");
-        }
-
-        try {
-            accountController.debitAccount(validAccount, "300");
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- String");
-        }
-
-        try {
-            accountController.debitAccount(validAccount);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- amount missing");
-        }
-
-        try {
-            accountController.debitAccount(validAccount, null);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- amount null");
-        }
-
-
-        try {
-            accountController.debitAccount(unvalidAccount, 300);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- Int and unvalid account");
-        }
-
-        try {
-            accountController.debitAccount(unvalidAccount, 300.5);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- Double and unvalid account");
-        }
-
-        try {
-            accountController.debitAccount(unvalidAccount, 300.5F);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- Float and unvalid account");
-        }
-
-        try {
-            accountController.debitAccount(unvalidAccount, "300");
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- String and unvalid account");
-        }
-
-        try {
-            accountController.debitAccount(unvalidAccount);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- amount missing and unvalid account");
-        }
-
-        try {
-            accountController.debitAccount(unvalidAccount, null);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- amount null and unvalid account");
-        }
-
-        try {
-            accountController.debitAccount(null, null);
-        } catch (SQLException e) {
-            fail("debitAccount : Not valid statement -- amount null and account null");
-        }
+    	String s = "toto";
+    	
+    	assertEquals(0, accountController.debitAccount(account, 20));
+    	//assertEquals(0, accountController.debitAccount(account, i));
+    	//assertEquals(0, accountController.debitAccount(account, Integer.parseInt(s)));
+    	assertEquals(0, accountController.debitAccount(accountFailed, 300));
+    	//assertEquals(0, accountController.debitAccount(accountFailed, i));
+    	//assertEquals(0, accountController.debitAccount(accountFailed, Integer.parseInt(s)));
+    	//assertEquals(0, accountController.debitAccount(accountEmpty, i));
 
     }
 
     @Test
-    public void verifyCardTest(){
+    public void testVerifyCard() throws SQLException{
 
-        try {
-            boolean isOk = accountController.verifyCard(validCardNumber);
-            if(!isOk)
-                fail("verifyCard : Should be ok");
-        } catch (SQLException e) {
-            fail("verifyCard : Ne devrait pas apparaitre");
-        }
-
-        try {
-            boolean isOk = accountController.verifyCard(000011110001111);
-            if(isOk)
-                fail("verifyCard : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("verifyCard : Not valid statement -- Integer");
-        }
-
-        try {
-            boolean isOk = accountController.verifyCard("00001111000");
-            if(isOk)
-                fail("verifyCard : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("verifyCard : Not enough characters");
-        }
-
-        try {
-            boolean isOk = accountController.verifyCard("000011kjjm11000");
-            if(isOk)
-                fail("verifyCard : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("verifyCard : Not valid characters -- String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyCard(null);
-            if(isOk)
-                fail("verifyCard : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("verifyCard : Not valid statement -- null");
-        }
-
-        try {
-            boolean isOk = accountController.verifyCard();
-            if(isOk)
-                fail("verifyCard : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("verifyCard : Not valid statement -- empty");
-        }
+    	String card = "";
+    	
+    	assertTrue(accountController.verifyCard(cardNumber));
+    	assertFalse(accountController.verifyCard(card));
+    	assertFalse(accountController.verifyCard("00001111000"));
+    	assertFalse(accountController.verifyCard("000011kjjm11000"));
+    	assertFalse(accountController.verifyCard(null));
 
     }
 
     @Test
-    public void verifyExpirationDateTest(){
+    public void testVerifyExpirationDate(){
 
-        try {
-            boolean isOk = accountController.verifyExpirationDate("01", "2020");
-            if(!isOk)
-                fail("findRelatedAccount : Should be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("01", "20");
-            if(!isOk)
-                fail("findRelatedAccount : Should be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(01, "2020");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Int and String -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(01, "n0");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Int and String (avec lettre) -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("n0", "20");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : String (with letters) and String -- should be String (without letters) and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(01, 20);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Int and Int -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("01", 200);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : String and Int -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(null, "20");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : null and String -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(null, 20);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : null and Int -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("01", null);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : String and null -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate(01, null);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Int and null -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("", "");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : empty String and empty String -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("", "2020");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : empty String and String -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("03", "");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : String and empty String -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("3", "12");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : invalid String and invalid String -- should be String and String");
-        }
-
-        try {
-            boolean isOk = accountController.verifyExpirationDate("03", "2012");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : String and invalid String -- should be String and String");
-        }
-    }
-
-    @Test
-    public void isOnlyNumericsTest(){
-
-        try {
-            boolean isOk = accountController.isOnlyNumerics("03");
-            if(!isOk)
-                fail("findRelatedAccount : Should be ok");
-        } catch (Exception e) {
-            fail("findRelatedAccount : Ne devrait pas arrivé");
-        }
-
-        try {
-            boolean isOk = accountController.isOnlyNumerics("0jedfhgizs3");
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (Exception e) {
-            fail("findRelatedAccount : unvalid String");
-        }
-
-        try {
-            boolean isOk = accountController.isOnlyNumerics(123);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (Exception e) {
-            fail("findRelatedAccount : Int -- should be String");
-        }
-
-        try {
-            boolean isOk = accountController.isOnlyNumerics(null);
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (Exception e) {
-            fail("findRelatedAccount : null -- should be String");
-        }
-
-        try {
-            boolean isOk = accountController.isOnlyNumerics();
-            if(isOk)
-                fail("findRelatedAccount : Shouldn't be ok");
-        } catch (Exception e) {
-            fail("findRelatedAccount : empty -- should be String");
-        }
-
+    	String month = "", year = "";
+    	
+    	assertTrue(accountController.verifyExpirationDate("01", "2020"));
+    	assertTrue(accountController.verifyExpirationDate("01", "20"));
+    	assertFalse(accountController.verifyExpirationDate("AA", "2020"));
+    	assertFalse(accountController.verifyExpirationDate("01", "AA"));
+    	assertFalse(accountController.verifyExpirationDate(month, year));
+    	assertFalse(accountController.verifyExpirationDate("", ""));
+    	assertFalse(accountController.verifyExpirationDate("01", null));
+    	assertFalse(accountController.verifyExpirationDate(null, "2020"));
+    	assertFalse(accountController.verifyExpirationDate(null, null));
+    	assertFalse(accountController.verifyExpirationDate("03", "2012"));
 
     }
 
     @Test
-    public void verifyAccountTest(){
+    public void testIsOnlyNumerics(){
 
-        try {
-            Boolean isOk = accountController.verifyAccount(validAccount);
-            if(!isOk)
-                fail("findRelatedAccount : Ne devrait pas apparaitre");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            Boolean isOk = accountController.verifyAccount(unvalidAccount);
-            if(isOk)
-                fail("findRelatedAccount : Ne devrait pas apparaitre");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            Boolean isOk = accountController.verifyAccount(null);
-            if(isOk)
-                fail("findRelatedAccount : Ne devrait pas apparaitre");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            Boolean isOk = accountController.verifyAccount();
-            if(isOk)
-                fail("findRelatedAccount : Ne devrait pas apparaitre");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            Boolean isOk = accountController.verifyAccount("unvalid");
-            if(isOk)
-                fail("findRelatedAccount : Ne devrait pas apparaitre");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
-        try {
-            Boolean isOk = accountController.verifyAccount(123);
-            if(isOk)
-                fail("findRelatedAccount : Ne devrait pas apparaitre");
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
-
+    	String s = "toto";
+    	
+    	assertTrue(accountController.isOnlyNumerics("03"));
+    	assertFalse(accountController.isOnlyNumerics("0jedfhgizs3"));
+    	assertFalse(accountController.isOnlyNumerics(null));
+    	assertFalse(accountController.isOnlyNumerics(s));
 
     }
 
     @Test
-    public void retrieveConsumerTest(){
+    public void testVerifyAccount() throws SQLException{
 
-        try {
-            Consumer consumer = accountController.retrieveConsumer(validAccount);
-        } catch (SQLException e) {
-            fail("findRelatedAccount : Ne devrait pas apparaitre");
-        }
+    	assertTrue(accountController.verifyAccount(account));
+    	assertFalse(accountController.verifyAccount(accountFailed));
+    	assertFalse(accountController.verifyAccount(null));
+    	assertFalse(accountController.verifyAccount(accountEmpty));
 
-        try {
-            Consumer consumer = accountController.retrieveConsumer(unvalidAccount);
-        } catch (SQLException e) {
-            fail("findRelatedAccount : unvalid Consumer object");
-        }
-
-        try {
-            Consumer consumer = accountController.retrieveConsumer(null);
-        } catch (SQLException e) {
-            fail("findRelatedAccount : null Consumer object");
-        }
-
-        try {
-            Consumer consumer = accountController.retrieveConsumer();
-        } catch (SQLException e) {
-            fail("findRelatedAccount : none Consumer object");
-        }
     }
 
     @Test
-    public void getRandomNumberTest(){
+    public void testRetrieveConsumer() throws SQLException{
 
-        try {
-            String id = accountController.getRandomNumber(0);
-        } catch (Exception e) {
-            fail("findRelatedAccount : shouldn't append");
-        }
+    	assertNotNull(accountController.retrieveConsumer(account));
+    	assertNull(accountController.retrieveConsumer(accountFailed));
+    	assertNull(accountController.retrieveConsumer(null));
 
-        try {
-            String id = accountController.getRandomNumber(3);
-        } catch (Exception e) {
-            fail("findRelatedAccount : shouldn't append");
-        }
+    }
 
-        try {
-            String id = accountController.getRandomNumber(15);
-        } catch (Exception e) {
-            fail("findRelatedAccount : can append");
-        }
+    @Test
+    public void testGetRandomNumber(){
 
-        try {
-            String id = accountController.getRandomNumber("1");
-        } catch (Exception e) {
-            fail("findRelatedAccount : String, should be an INT");
-        }
-
-        try {
-            String id = accountController.getRandomNumber(0.4F);
-        } catch (Exception e) {
-            fail("findRelatedAccount : Float, should be an INT");
-        }
-
-        try {
-            String id = accountController.getRandomNumber(5.4F);
-        } catch (Exception e) {
-            fail("findRelatedAccount : Double, should be an INT");
-        }
+    	int i = (Integer) null;
+    	
+    	assertEquals("", accountController.getRandomNumber(0));
+    	assertEquals("", accountController.getRandomNumber(15));
+    	fail(accountController.getRandomNumber(i));
     }
 
 }
