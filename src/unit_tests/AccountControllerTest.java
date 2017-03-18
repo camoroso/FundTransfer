@@ -1,12 +1,13 @@
 package unit_tests;
 
+import java.sql.SQLException;
+
+import org.junit.Test;
+
 import controllers.AccountController;
 import junit.framework.TestCase;
 import models.Account;
 import models.Consumer;
-import org.junit.Test;
-
-import java.sql.SQLException;
 
 public class AccountControllerTest extends TestCase {
 
@@ -143,11 +144,11 @@ public class AccountControllerTest extends TestCase {
     @Test
     public void testGetRandomNumber(){
 
-    	int i = (Integer) null;
+    	int i;
     	
-    	assertEquals("", accountController.getRandomNumber(0));
-    	assertEquals("", accountController.getRandomNumber(15));
-    	fail(accountController.getRandomNumber(i));
+    	assertEquals("", AccountController.getRandomNumber(0));
+    	assertEquals("", AccountController.getRandomNumber(15));
+    	//fail(AccountController.getRandomNumber(i));
     }
 
 }

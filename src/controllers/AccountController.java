@@ -1,12 +1,12 @@
 package controllers;
 
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+
 import models.Account;
 import models.Consumer;
 
@@ -135,42 +135,6 @@ public class AccountController {
 	 	    return sb.toString();
 	 	}
 	 	
-	 	public void insertData() throws SQLException {
-	 		String[] lastnames = {"AMOROSO", "CORDANI", "DELON", "FONTAS", "DUPOND", "DURAND", "LEGRAND", "DUPONT", "HADDOCK", "TINTIN"};
-	 		String[] firstnames = {"Cloe", "Anthony", "Hermine", "Julien", "Herve", "Hubert", "Melanie", "Jacques", "Paul", "Denis"};
-	 		
-	 		for (int i=0; i<10;i++) {
-	 			BigInteger cardNumber = new BigInteger(getRandomNumber(13));
-		 		Integer cvv = new Integer(getRandomNumber(3));
-		 		Integer expirationMonth= 01 + rnd.nextInt(12);
-		 		Integer expirationYear = 17 + rnd.nextInt(10);
-	 			
-		 		Consumer consumer = new Consumer();
-		 		
-		 		consumer.setId(i);
-		 		consumer.setFirstname(firstnames[i]);
-		 		consumer.setLastname(lastnames[i]);
-		 		
-		 		System.out.println(i+1 + "/10");
-		 		
-		 		String query = "INSERT INTO consumer VALUES("+ consumer.getId() + ",'" +consumer.getFirstname()+"','"+consumer.getLastname()+"')";
-		 		bddControl.queryInsert(query);
-		 		
-	 			Account account = new Account();
-	 			
-		 		account.setCardNumber(String.valueOf(cardNumber));
-		 		account.setCVV(String.valueOf(cvv));
-		 		account.setExpirationMonth(String.valueOf(expirationMonth));
-		 		account.setExpirationYear(String.valueOf(expirationYear));
-		 		account.setRemainBalance(300);
-		 		account.setRelatedConsumer(consumer);
-		 		
-		 		query = "INSERT INTO account (card_number, expiration_month, expiration_year, cvv, remain_balance, consumer_id) "
-		 				+ "VALUES ('"+account.getCardNumber()+"','"+account.getExpirationMonth()+"','"+account.getExpirationYear()+"','"+account.getCVV()+"','"+account.getRemainBalance()+"',"+account.getRelatedConsumer().getId()+")";
-		 		bddControl.queryInsert(query);
-	 		}
-	 	}
-	 
 	 	public boolean verifyAccount(Account account) throws SQLException {
 	 		boolean isOk = false;
 	 		

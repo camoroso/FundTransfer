@@ -1,8 +1,12 @@
 package application;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Scanner;
+
 import controllers.AccountController;
+import controllers.BDDController;
 import models.Account;
 import models.Consumer;
 
@@ -12,20 +16,22 @@ public class FundTransfer {
 	 	private static Account account;
 	 	private static int amount;
 	 	private static AccountController accountCtrl;
+	 	private static BDDController bddCtrl;
 	 	
-	 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
+	 	public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException {
 	 
 	 		consumer = new Consumer();
 	 		account = new Account();
 	 		accountCtrl = new AccountController();
+	 		bddCtrl = new BDDController();
 	 		boolean isOk;
 	 		
 	 		Scanner sc = new Scanner(System.in);
 	 		
 	 		System.out.println("--- INJECTION EN BASE DE DONNEES ---");
-	 		accountCtrl.insertData();
+	 		bddCtrl.insertData();
 	 		
-	 		System.out.println("--- TRANSACTION ---");
+	 	/*	System.out.println("--- TRANSACTION ---");
 	 		System.out.println("Montant du paiement :");
 	 		amount = sc.nextInt();
 	 		
@@ -64,7 +70,7 @@ public class FundTransfer {
 	 		System.out.println("--- TRANSFERT EN COURS ---");
 	 		accountCtrl.debitAccount(account, amount);
 	 		
-	 		System.out.println("--- TRANSFERT TERMINE ---");
+	 		System.out.println("--- TRANSFERT TERMINE ---");*/
 	 	}
 	 
 	 }
