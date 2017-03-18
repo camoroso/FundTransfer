@@ -82,7 +82,6 @@ public class BDDController {
 	 	      
 	 	      //On lit le fichier data.txt pour inserer en base
 	 	      while((line=br.readLine()) != null) {
-	 	    	  System.out.println(line);
 	 	    	  String tmp[]=line.split(",");
 	 	    	  id=Integer.parseInt(tmp[0]);
 			 	  lastname=tmp[1];
