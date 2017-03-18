@@ -67,7 +67,7 @@ public class BDDController {
 	 	}
 	 	
 	 	public void insertData() throws SQLException, FileNotFoundException {
-	 	    BufferedReader br = new BufferedReader(new FileReader("FundTransfer/src/data.txt"));
+	 	    BufferedReader br = new BufferedReader(new FileReader("data.txt"));
 	 	    PreparedStatement pstmt = null;
 	 	    Connection conn = null;
 	 	    int id;
